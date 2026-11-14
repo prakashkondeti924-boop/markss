@@ -58,6 +58,17 @@ Open the local address printed in the terminal (usually `http://127.0.0.1:5000`)
 
 For a production setup, change the password before exposing the app to others by setting `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables or by updating the stored user record in the database.
 
+## Deploy on Render
+
+Create a **Web Service** from this repository and use these commands:
+
+- **Build Command:** `pip install -r requirements.txt`
+- **Start Command:** `gunicorn --bind 0.0.0.0:$PORT app:app`
+
+Set `SECRET_KEY` to a long, random value, and set `ADMIN_USERNAME` and `ADMIN_PASSWORD` to non-default credentials in the service's environment variables. The default credentials are only suitable for local testing.
+
+The app currently stores data in SQLite at `instance/students.db`. Render's free web services do not provide persistent disks, so records may be lost when the service restarts or redeploys. Use a host/storage plan with a persistent disk or migrate to a managed database before entering important student records.
+
 ## Add sample student records
 
 With the virtual environment active and the terminal in this project folder, run:
