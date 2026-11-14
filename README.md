@@ -19,7 +19,7 @@ Each of the six subjects has a maximum of 100 marks. A student passes only when 
 
 - `app.py` — Flask routes, database model, validation, calculations, PDF generation, and sample-data command.
 - `requirements.txt` — Python packages required by the app.
-- `static/style.css` — responsive navy-and-white interface styling.
+- `static/style.css` — responsive blue-and-white interface styling.
 - `static/script.js` — mobile navigation, delete confirmation, and notification controls.
 - `templates/base.html` — shared page layout and navigation.
 - `templates/dashboard.html` — summary cards, quick actions, and recent records.
