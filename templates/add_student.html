@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Add student{% endblock %}
+{% block eyebrow %}STUDENT RECORDS / ADD{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">NEW RECORD</p><h1>Add student</h1><p class="page-subtitle">Register a student and enter marks for all six subjects.</p></div>
+  <a class="button button-quiet" href="{{ url_for('student_records') }}">← <span>All records</span></a>
+</section>
+<section class="panel form-panel">
+  {% set submit_label = "Save student" %}
+  {% include "_student_form.html" %}
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Class rankings{% endblock %}
+{% block eyebrow %}PERFORMANCE / RANKINGS{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">ACADEMIC PERFORMANCE</p><h1>Class rankings</h1><p class="page-subtitle">Compare student results within a class and section.</p></div>
+</section>
+<section class="panel">
+  <form method="get" class="ranking-filter">
+    <label class="field"><span>Class</span><select name="class_name" id="rankingClass" required><option value="">Select a class</option>{% for class_name in available_classes %}<option value="{{ class_name }}" {% if selected_class|lower == class_name|lower %}selected{% endif %}>Class {{ class_name }}</option>{% endfor %}</select></label>
+    <label class="field"><span>Section <small>(optional)</small></span><select name="section" id="rankingSection"><option value="">All sections</option>{% for section in available_sections %}<option value="{{ section }}" {% if selected_section|lower == section|lower %}selected{% endif %}>Section {{ section }}</option>{% endfor %}</select></label>
+    <button class="button button-primary" type="submit">Show rankings</button>
+  </form>
+  {% if selected_class %}
+    {% if students %}
+    <div class="table-toolbar ranking-toolbar"><span><strong>{{ students|length }}</strong> students ranked{% if selected_section %} in Class {{ selected_class }}, Section {{ selected_section }}{% else %} in Class {{ selected_class }}{% endif %}</span><span class="ranking-note">Tied scores share a rank; the next rank is skipped.</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>RANK</th><th>STUDENT</th><th>ROLL NO.</th><th>CLASS</th><th>PERCENTAGE</th><th>GRADE</th><th>STATUS</th></tr></thead>
+        <tbody>
+        {% for student in students %}
+          <tr>
+            <td><span class="rank-number {{ 'rank-top' if student.rank <= 3 }}">#{{ student.rank }}</span></td>
+            <td><a class="student-name" href="{{ url_for('student_result', student_id=student.id) }}">{{ student.name }}</a></td>
+            <td>{{ student.roll_number }}</td><td>{{ student.class_name }} - {{ student.section }}</td>
+            <td class="strong-cell">{{ "%.2f"|format(student.percentage) }}%</td>
+            <td><span class="grade-pill">{{ student.grade }}</span></td>
+            <td><span class="status-pill {{ 'status-pass' if student.passed else 'status-fail' }}">{{ student.result_status }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><span class="empty-icon">↗</span><h3>No records in this selection</h3><p>Choose another class or section, or add student records first.</p></div>
+    {% endif %}
+  {% else %}
+    <div class="empty-state compact-empty"><span class="empty-icon">↗</span><h3>Select a class to begin</h3><p>Choose a class above to see its student rankings.</p></div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }}'s result{% endblock %}
+{% block eyebrow %}STUDENT RESULT{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">INDIVIDUAL RESULT</p><h1>{{ student.name }}</h1><p class="page-subtitle">Roll {{ student.roll_number }} <span class="bullet-separator">•</span> Class {{ student.class_name }} - {{ student.section }}</p></div>
+  <div class="heading-actions">
+    <a class="button button-secondary" href="{{ url_for('edit_student', student_id=student.id) }}">✎ <span>Edit</span></a>
+    <a class="button button-primary" href="{{ url_for('student_marksheet', student_id=student.id) }}">↓ <span>Download PDF</span></a>
+  </div>
+</section>
+<section class="result-summary">
+  <article class="result-highlight"><div class="result-label">OVERALL PERCENTAGE</div><div class="result-percentage">{{ "%.2f"|format(student.percentage) }}<span>%</span></div><div class="result-caption">{{ student.total_obtained }} out of 600 marks</div></article>
+  <article class="result-mini"><span class="stat-icon icon-purple">✦</span><div><small>GRADE</small><strong>{{ student.grade }}</strong><span>Overall grade</span></div></article>
+  <article class="result-mini"><span class="stat-icon {{ 'icon-green' if student.passed else 'icon-red' }}">{{ "✓" if student.passed else "!" }}</span><div><small>RESULT</small><strong class="{{ 'text-pass' if student.passed else 'text-fail' }}">{{ student.result_status }}</strong><span>{% if student.passed %}All subjects passed{% else %}Below 35 in one or more subjects{% endif %}</span></div></article>
+</section>
+<section class="panel">
+  <div class="section-heading section-heading-row"><div><h2>Subject-wise marks</h2><p>Marks obtained out of 100 in each subject.</p></div><span class="total-chip">Total <strong>{{ student.total_obtained }} / 600</strong></span></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>SUBJECT</th><th>MAXIMUM MARKS</th><th>MARKS OBTAINED</th><th>PERFORMANCE</th><th>STATUS</th></tr></thead>
+      <tbody>
+      {% for field, label in subjects %}
+        {% set mark = student|attr(field) %}
+        <tr><td class="student-name">{{ label }}</td><td>100</td><td class="strong-cell">{{ mark }}</td><td><div class="progress-track"><span class="{{ 'progress-low' if mark < 35 else '' }}" style="width: {{ mark }}%"></span></div></td><td><span class="status-pill {{ 'status-pass' if mark >= 35 else 'status-fail' }}">{{ "PASS" if mark >= 35 else "FAIL" }}</span></td></tr>
+      {% endfor %}
+      <tr class="table-total"><td>Total</td><td>600</td><td>{{ student.total_obtained }}</td><td>{{ "%.2f"|format(student.percentage) }}%</td><td><span class="status-pill {{ 'status-pass' if student.passed else 'status-fail' }}">{{ student.result_status }}</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<div class="result-footer">
+  <a class="text-link" href="{{ url_for('student_records') }}">← Back to all records</a>
+  <form method="post" action="{{ url_for('delete_student', student_id=student.id) }}" data-confirm="Delete {{ student.name }}'s record? This cannot be undone.">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="button button-danger-quiet" type="submit">Delete record</button>
+  </form>
+</div>
+{% endblock %}

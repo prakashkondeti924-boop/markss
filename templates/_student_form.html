@@ -1,0 +1,41 @@
+<form method="post" class="student-form" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <section class="form-section">
+    <div class="form-section-heading"><span class="step-number">01</span><div><h2>Student information</h2><p>Enter the student's basic details.</p></div></div>
+    <div class="form-grid">
+      {% for field, label, placeholder, limit in [
+        ("name", "Student name", "e.g. Ananya Sharma", 100),
+        ("roll_number", "Roll number", "e.g. 10A-014", 30),
+        ("class_name", "Class", "e.g. 10", 40),
+        ("section", "Section", "e.g. A", 20)
+      ] %}
+        {% set value = form_data.get(field) if form_data else (student|attr(field) if student else "") %}
+        <div class="field {% if errors.get(field) %}field-error{% endif %}">
+          <label for="{{ field }}">{{ label }} <span class="required">*</span></label>
+          <input id="{{ field }}" name="{{ field }}" type="text" maxlength="{{ limit }}" value="{{ value }}" placeholder="{{ placeholder }}" required aria-describedby="{{ field }}-error">
+          {% if errors.get(field) %}<small class="error-text" id="{{ field }}-error">{{ errors[field] }}</small>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="form-section marks-section">
+    <div class="form-section-heading"><span class="step-number">02</span><div><h2>Subject marks</h2><p>Enter whole-number marks from 0 to 100 for each subject.</p></div></div>
+    <div class="form-grid marks-grid">
+      {% for field, label in subjects %}
+        {% set value = form_data.get(field) if form_data else (student|attr(field) if student else "") %}
+        <div class="field {% if errors.get(field) %}field-error{% endif %}">
+          <label for="{{ field }}">{{ label }} <span class="required">*</span></label>
+          <div class="input-suffix"><input id="{{ field }}" name="{{ field }}" type="number" min="0" max="100" step="1" value="{{ value }}" placeholder="0 - 100" required aria-describedby="{{ field }}-error"><span>/ 100</span></div>
+          {% if errors.get(field) %}<small class="error-text" id="{{ field }}-error">{{ errors[field] }}</small>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="form-hint"><span>i</span> Total maximum marks: <strong>600</strong>. A student passes by scoring at least 35 in every subject.</div>
+  </section>
+
+  <div class="form-actions">
+    <a class="button button-quiet" href="{{ url_for('student_records') }}">Cancel</a>
+    <button class="button button-primary" type="submit">{{ submit_label }}</button>
+  </div>
+</form>

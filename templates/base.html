@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142d4e">
+  <title>{% block title %}Dashboard{% endblock %} · Marks</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  {% if current_user.is_authenticated %}
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{{ url_for('dashboard') }}" aria-label="Marks dashboard">
+        <span class="brand-mark">M</span>
+        <span><strong>marks</strong><small>Student Manager</small></span>
+      </a>
+      <div class="nav-caption">WORKSPACE</div>
+      <nav class="nav-list" aria-label="Main navigation">
+        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">⌂</span> Dashboard</a>
+        <a class="nav-link {% if request.endpoint == 'add_student' %}active{% endif %}" href="{{ url_for('add_student') }}"><span class="nav-icon">＋</span> Add student</a>
+        <a class="nav-link {% if request.endpoint in ['student_records', 'student_result', 'edit_student'] %}active{% endif %}" href="{{ url_for('student_records') }}"><span class="nav-icon">▤</span> Student records</a>
+        <a class="nav-link {% if request.endpoint == 'class_rankings' %}active{% endif %}" href="{{ url_for('class_rankings') }}"><span class="nav-icon">↗</span> Class rankings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-footer-mark">✓</div>
+        <div><strong>Logged in as {{ current_user.username }}</strong><small>Academic records at a glance.</small></div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <div class="topbar-heading">{% block eyebrow %}STUDENT MANAGEMENT{% endblock %}</div>
+        <div class="topbar-actions">
+          <a class="topbar-action" href="{{ url_for('add_student') }}"><span>＋</span> Add student</a>
+          <form action="{{ url_for('logout') }}" method="post" class="inline-logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="topbar-action logout-action"><span>↩</span> Logout</button>
+          </form>
+        </div>
+      </header>
+      <div class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-stack" aria-live="polite">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}" role="status">
+                  <span>{{ "✓" if category == "success" else "!" }}</span>
+                  {{ message }}
+                  <button type="button" class="flash-close" aria-label="Dismiss notification">×</button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+  {% else %}
+    {% block unauthenticated_content %}{% endblock %}
+  {% endif %}
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</body>
+</html>
